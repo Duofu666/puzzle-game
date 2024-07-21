@@ -1,0 +1,101 @@
+puzzle.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 2px;
+        }
+        .puzzle-piece {
+            width: 100px;
+            height: 100px;
+            background-size: 300px 300px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="puzzle-container" id="puzzleContainer"></div>
+
+<script>
+    const pieces = [
+        { id: 1, bgPos: '0px 0px' },
+        { id: 2, bgPos: '-100px 0px' },
+        { id: 3, bgPos: '-200px 0px' },
+        { id: 4, bgPos: '0px -100px' },
+        { id: 5, bgPos: '-100px -100px' },
+        { id: 6, bgPos: '-200px -100px' },
+        { id: 7, bgPos: '0px -200px' },
+        { id: 8, bgPos: '-100px -200px' },
+        { id: 9, bgPos: '-200px -200px' }
+    ];
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function createPuzzle() {
+        const puzzleContainer = document.getElementById('puzzleContainer');
+        shuffle(pieces);
+        pieces.forEach(piece => {
+            const div = document.createElement('div');
+            div.classList.add('puzzle-piece');
+            div.style.backgroundImage = 'url("image_url")';
+            div.style.backgroundPosition = piece.bgPos;
+            div.draggable = true;
+            div.id = `piece-${piece.id}`;
+            puzzleContainer.appendChild(div);
+        });
+
+        puzzleContainer.addEventListener('dragstart', dragStart);
+        puzzleContainer.addEventListener('dragover', dragOver);
+        puzzleContainer.addEventListener('drop', drop);
+    }
+
+    let dragged;
+
+    function dragStart(event) {
+        dragged = event.target;
+        event.target.style.opacity = 0.5;
+    }
+
+    function dragOver(event) {
+        event.preventDefault();
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        if (event.target.classList.contains('puzzle-piece')) {
+            const target = event.target;
+            const targetParent = target.parentNode;
+            const draggedParent = dragged.parentNode;
+            targetParent.insertBefore(dragged, target);
+            draggedParent.insertBefore(target, dragged);
+        }
+        dragged.style.opacity = "";
+    }
+
+    createPuzzle();
+</script>
+
+</body>
+</html>
